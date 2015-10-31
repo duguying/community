@@ -7,6 +7,10 @@
 	<servlet>
         <servlet-name>controller</servlet-name>
         <servlet-class>net.duguying.web.mvc.ActionServlet</servlet-class>
+        <init-param>
+            <param-name>packages</param-name>
+            <param-value>net.duguying.community.action</param-value>
+        </init-param>
     </servlet>
 	
 	<servlet-mapping>

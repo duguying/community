@@ -4,6 +4,7 @@ import net.duguying.web.debug.Debug;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -13,6 +14,7 @@ import java.io.PrintWriter;
 public class RequestContext {
     private HttpServletRequest request;
     private HttpServletResponse response;
+    private static String root;
 
     public RequestContext(HttpServletRequest request, HttpServletResponse response){
         this.request = request;
@@ -29,6 +31,13 @@ public class RequestContext {
 
     public HttpServletResponse getResponse(){
         return this.response;
+    }
+
+    public final static String root() {
+        if(root!=null && root.trim().length()>0){
+            return root;
+        }
+        return RequestContext.class.getResource("/").getFile();
     }
 
     public void write(String content) throws IOException {
