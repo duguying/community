@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by duguying on 2015/10/30.
@@ -39,7 +41,7 @@ public class ActionServlet extends HttpServlet {
                     Object classObj = null;
                     try {
                         classObj = this.loadClass(className);
-                        this.scanMethod(classObj, ctx, requestMethod, uri);
+                        this.scanMethod(classObj, requestMethod, uri);
                     } catch (ClassNotFoundException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
@@ -69,14 +71,33 @@ public class ActionServlet extends HttpServlet {
         this._do(request, response, "post", request.getRequestURI());
     }
 
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this._do(request, response, "delete", request.getRequestURI());
+    }
+
+    public void doHead(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this._do(request, response, "head", request.getRequestURI());
+    }
+
+    public void doOptions(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this._do(request, response, "options", request.getRequestURI());
+    }
+
+    public void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this._do(request, response, "put", request.getRequestURI());
+    }
+
+    public void doTrace(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this._do(request, response, "trace", request.getRequestURI());
+    }
+
     /**
      * scan and cache method url map
      * @param obj
-     * @param ctx
      * @param requestMethod
      * @param uri
      */
-    private void scanMethod(Object obj, RequestContext ctx, String requestMethod, String uri){
+    private void scanMethod(Object obj, String requestMethod, String uri){
         if (obj!=null){
             Method[] methods = obj.getClass().getDeclaredMethods();
             for(Method method : methods){
@@ -108,10 +129,24 @@ public class ActionServlet extends HttpServlet {
         Map<String, Object> action = (Map<String, Object>) this.URLMapping.get(uri);
         if (action!=null) {
             String reqMethod = (String) action.get("HttpMethod");
-            if (reqMethod.equals(requestMethod)) {
+            if (reqMethod.equals(requestMethod) || reqMethod.equals("all")) {
                 Method method = (Method) action.get("Method");
                 Object _class = action.get("Class");
                 method.invoke(_class, ctx);
+            }
+        }else {
+            // regexp match mode
+            for (Map.Entry<String, Object> entry : this.URLMapping.entrySet()) {
+                String key = entry.getKey();
+                action = (Map<String, Object>) entry.getValue();
+
+                Map<String,Object> matchResult = this.parseURIParam(key, uri);
+                if (matchResult!=null){
+                    ctx.setURIParams(matchResult);
+                    Method method = (Method) action.get("Method");
+                    Object _class = action.get("Class");
+                    method.invoke(_class, ctx);
+                }
             }
         }
     }
@@ -148,5 +183,33 @@ public class ActionServlet extends HttpServlet {
 
         String[] a = new String[0];
         return fileNameList.toArray(a);
+    }
+
+    private Map<String,Object> parseURIParam(String uriMode, String reqUri){
+        // ` :param `
+
+        Pattern patternUriMode = Pattern.compile("/:([\\D]{1}[\\d\\D][^\\n\\r/]*)",Pattern.CASE_INSENSITIVE);
+        Matcher matcherUriMode = patternUriMode.matcher(uriMode);
+
+        Map<String,Object> params = new HashMap<String, Object>();
+        uriMode = uriMode.replaceAll("/:[\\D]{1}[\\d\\D][^\\n\\r/]*","/([\\\\d\\\\D][^\\\\r\\\\n]*)");
+
+        Pattern pattern = Pattern.compile(uriMode,Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(reqUri);
+        if(matcher.find()) {
+            int count = matcher.groupCount();
+            for (int i=0;i<count;i++){
+                matcherUriMode.find();
+                String key = matcherUriMode.group(1);
+                String value = matcher.group(i+1);
+                params.put(key, value);
+            }
+        }
+
+        if (params.size()>0){
+            return params;
+        }else {
+            return null;
+        }
     }
 }

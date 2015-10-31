@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by duguying on 2015/10/31.
@@ -15,10 +17,14 @@ public class RequestContext {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private static String root;
+    private String uri;
+    private Map<String,Object> URIParams;
 
     public RequestContext(HttpServletRequest request, HttpServletResponse response){
         this.request = request;
         this.response = response;
+        this.uri = request.getRequestURI();
+        Debug.println("[URI] "+uri);
     }
 
     public HttpServletRequest getRequest(){
@@ -39,5 +45,69 @@ public class RequestContext {
     public void write(String content) throws IOException {
         PrintWriter out = response.getWriter();
         out.println(content);
+    }
+
+    /**
+     * parse uri params
+     * @param key
+     * @return
+     */
+    public String uparam(String key){
+        Object value = this.URIParams.get(key);
+        if (value!=null){
+            return value.toString();
+        }else {
+            return null;
+        }
+    }
+
+    /**
+     * parse uri params with default value
+     * @param key
+     * @param defaultValue
+     * @return
+     */
+    public String uparam(String key, String defaultValue){
+        Object value = this.URIParams.get(key);
+        if (value!=null){
+            return value.toString();
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public int uparam(String key, int defaultValue){
+        Object value = this.URIParams.get(key);
+        if (value!=null){
+            return Integer.parseInt(value.toString());
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public long uparam(String key, long defaultValue){
+        Object value = this.URIParams.get(key);
+        if (value!=null){
+            return Long.parseLong(value.toString());
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public float uparam(String key, float defaultValue){
+        Object value = this.URIParams.get(key);
+        if (value!=null){
+            return Float.parseFloat(value.toString());
+        }else {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * put the uri params into RequestContext
+     * @param uparam
+     */
+    protected void setURIParams(Map<String,Object> uparam){
+        this.URIParams = uparam;
     }
 }
