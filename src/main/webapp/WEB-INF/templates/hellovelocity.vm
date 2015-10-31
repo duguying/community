@@ -7,6 +7,9 @@
 <body>
 <p>velocity模版引擎测试</p>
 <p>$CommonTool.test()</p>
-<font style="color: red;">自己造轮子</font>
+#set($var1=1)
+#set($var2=2)
+#set($var3=$var1+$var2)
+<font style="color: red;">自己造轮子 $!{var3}</font>
 </body>
 </html>

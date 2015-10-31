@@ -28,6 +28,7 @@ public class ActionServlet extends HttpServlet {
     private String TPL_DIR;
     private VelocityEngine VE = null;
     private VelocityContext VTX = null;
+    private String PREFIX = "";
 
     public void init() throws ServletException {
         super.init();
@@ -35,6 +36,11 @@ public class ActionServlet extends HttpServlet {
         // initial velocity
         this.initVelocity();
         this.loadVelocityTools();
+        // action prefix
+        String prefix = this.getInitParameter("action-prefix");
+        if (prefix!=null){
+            this.PREFIX = prefix;
+        }
     }
     
     /**
@@ -132,7 +138,11 @@ public class ActionServlet extends HttpServlet {
     }
 
     public String filtSpecialUriChars(String uri){
-        return uri
+        String prefix = "";
+        if (!this.PREFIX.isEmpty()){
+            prefix = "/" + this.PREFIX;
+        }
+        return prefix + uri
 //                .replaceAll("\\[","\\\\[").replaceAll("\\]","\\\\]")
 //                .replaceAll("\\{","\\\\{").replaceAll("\\}","\\\\}")
                 .replaceAll("\\(","\\\\(").replaceAll("\\)","\\\\)")

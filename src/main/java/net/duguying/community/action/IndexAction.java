@@ -19,26 +19,6 @@ public class IndexAction {
     @HttpAnnotation.URLMapping(uri = "/hello", method = "get")
     public void Index(RequestContext ctx) throws IOException {
         ctx.writeln("hello from Index method");
-
-//        String root = ctx.root();
-//        File dir = new File(root);
-//        String parentDir = dir.getParent() + File.separator + "templates";
-
-//        Properties p = new Properties();
-//        p.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, parentDir);
-//        VelocityEngine ve = new VelocityEngine();
-//
-//        ve.init(p);
-
-//        Template t = ve.getTemplate("hellovelocity.vm");
-
-//        VelocityContext vtx = new VelocityContext();
-//        vtx.put("CommonTool",new CommonTool());
-
-//        StringWriter writer = new StringWriter();
-//        t.merge(vtx, writer);
-
-//        ctx.write(writer.toString());
     }
 
     @HttpAnnotation.URLMapping(uri = "/test1")
