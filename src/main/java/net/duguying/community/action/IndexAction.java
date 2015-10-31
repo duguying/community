@@ -11,11 +11,11 @@ import java.io.IOException;
 public class IndexAction {
     @HttpAnnotation.URLMapping(uri = "/hello", method = "get")
     public void Index(RequestContext ctx) throws IOException {
-        ctx.write("hello from Index method");
+        ctx.writeln("hello from Index method");
     }
 
     @HttpAnnotation.URLMapping(uri = "/test1")
     public void test1(RequestContext ctx) throws IOException {
-        ctx.write("hello from test1 method");
+        ctx.writeln("hello from test1 method");
     }
 }

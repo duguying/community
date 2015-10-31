@@ -44,6 +44,11 @@ public class RequestContext {
 
     public void write(String content) throws IOException {
         PrintWriter out = response.getWriter();
+        out.print(content);
+    }
+
+    public void writeln(String content) throws IOException {
+        PrintWriter out = response.getWriter();
         out.println(content);
     }
 
@@ -109,5 +114,54 @@ public class RequestContext {
      */
     protected void setURIParams(Map<String,Object> uparam){
         this.URIParams = uparam;
+    }
+
+    public String param(String key){
+        return this.request.getParameter(key);
+    }
+
+    public String param(String key, String defaultValue){
+        String value = this.request.getParameter(key);
+        if (value != null){
+            return value;
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public int param(String key, int defaultValue){
+        String value = this.request.getParameter(key);
+        if (value != null){
+            return Integer.parseInt(value);
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public long param(String key, long defaultValue){
+        String value = this.request.getParameter(key);
+        if (value != null){
+            return Long.parseLong(value);
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public float param(String key, float defaultValue){
+        String value = this.request.getParameter(key);
+        if (value != null){
+            return Float.parseFloat(value);
+        }else {
+            return defaultValue;
+        }
+    }
+
+    public boolean param(String key, boolean defaultValue){
+        String value = this.request.getParameter(key);
+        if (value != null){
+            return value.equals("true");
+        }else {
+            return defaultValue;
+        }
     }
 }
