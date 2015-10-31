@@ -201,7 +201,7 @@ public class ActionServlet extends HttpServlet {
         Matcher matcherUriMode = patternUriMode.matcher(uriMode);
 
         Map<String,Object> params = new HashMap<String, Object>();
-        uriMode = uriMode.replaceAll("/:[\\D]{1}[\\d\\D][^\\n\\r/]*","/([\\\\d\\\\D][^\\\\r\\\\n]*)");
+        uriMode = uriMode.replaceAll("/:[\\D]{1}[\\d\\D][^\\n\\r/]*","/([\\\\d\\\\D][^\\\\r\\\\n]*)")+"$";
 
         Pattern pattern = Pattern.compile(uriMode,Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(reqUri);
