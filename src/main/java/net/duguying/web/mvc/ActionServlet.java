@@ -105,16 +105,24 @@ public class ActionServlet extends HttpServlet {
 
                 HttpAnnotation.URLMapping um = method.getAnnotation(HttpAnnotation.URLMapping.class);
                 if (um != null && um.uri().trim().length() > 0){
-                    Debug.println("REQUEST: " + "[" + um.method().toUpperCase() + "]" + um.uri() +
+                    Debug.println("REQUEST: " + "[" + um.method().toUpperCase() + "]" + this.filtSpecialUriChars(um.uri()) +
                             " METHOD: " + obj.getClass().getName() + "." + method.getName());
 
                     action.put("HttpMethod", um.method().toLowerCase());
                     action.put("Class", obj);
                     action.put("Method", method);
-                    this.URLMapping.put(um.uri(), action);
+                    this.URLMapping.put(this.filtSpecialUriChars(um.uri()), action);
                 }
             }
         }
+    }
+
+    public String filtSpecialUriChars(String uri){
+        return uri
+//                .replaceAll("\\[","\\\\[").replaceAll("\\]","\\\\]")
+//                .replaceAll("\\{","\\\\{").replaceAll("\\}","\\\\}")
+                .replaceAll("\\(","\\\\(").replaceAll("\\)","\\\\)")
+                .replaceAll("\\\\", "\\\\\\\\");
     }
 
     /**
@@ -140,12 +148,13 @@ public class ActionServlet extends HttpServlet {
                 String key = entry.getKey();
                 action = (Map<String, Object>) entry.getValue();
 
-                Map<String,Object> matchResult = this.parseURIParam(key, uri);
+                Map<String,Object> matchResult = this.matchSpecialAction(key, uri);
                 if (matchResult!=null){
                     ctx.setURIParams(matchResult);
                     Method method = (Method) action.get("Method");
                     Object _class = action.get("Class");
                     method.invoke(_class, ctx);
+                    return;
                 }
             }
         }
@@ -185,7 +194,7 @@ public class ActionServlet extends HttpServlet {
         return fileNameList.toArray(a);
     }
 
-    private Map<String,Object> parseURIParam(String uriMode, String reqUri){
+    private Map<String,Object> matchSpecialAction(String uriMode, String reqUri){
         // ` :param `
 
         Pattern patternUriMode = Pattern.compile("/:([\\D]{1}[\\d\\D][^\\n\\r/]*)",Pattern.CASE_INSENSITIVE);
@@ -204,11 +213,8 @@ public class ActionServlet extends HttpServlet {
                 String value = matcher.group(i+1);
                 params.put(key, value);
             }
-        }
-
-        if (params.size()>0){
             return params;
-        }else {
+        }else{
             return null;
         }
     }

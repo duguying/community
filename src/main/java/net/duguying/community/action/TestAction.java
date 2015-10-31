@@ -22,4 +22,19 @@ public class TestAction {
         ctx.write("id: "+id);
         ctx.write("\ntime: "+time);
     }
+
+    @HttpAnnotation.URLMapping(uri = "/[\\d]+")
+    public void regexpRouter(RequestContext ctx) throws IOException {
+        ctx.write("here is regexp router test, error");
+    }
+
+    @HttpAnnotation.URLMapping(uri = "/.*")
+    public void regexpStarRouter(RequestContext ctx) throws IOException {
+        ctx.write("here is regexp router test, star");
+    }
+
+    @HttpAnnotation.URLMapping(uri = "@404")
+    public void page404(RequestContext ctx) throws IOException {
+        ctx.write("404 page not found!");
+    }
 }
