@@ -2,7 +2,6 @@ package net.duguying.web.mvc;
 
 import net.duguying.web.debug.Debug;
 
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +19,7 @@ import java.util.Map;
  * Created by duguying on 2015/10/30.
  */
 public class ActionServlet extends HttpServlet {
+    private Map<String, Object> URLMapping = new HashMap<String, Object>();
     
     /**
      * do for request
@@ -29,31 +29,34 @@ public class ActionServlet extends HttpServlet {
      */
     private void _do(HttpServletRequest request, HttpServletResponse response, String requestMethod, String uri) throws IOException {
         RequestContext ctx = new RequestContext(request, response);
-        // load class
-        List<Object> classObjects = new ArrayList<Object>();
-        String packages = this.getInitParameter("packages");
-        String[] packageList = this.parsePackages(packages);
-        for (String packageName : packageList){
-            String[] classNameList = this.parseClasses(packageName);
-            for (String className : classNameList){
-                Object classObj = null;
-                try {
-                    classObj = this.loadClass(className);
-                    classObjects.add(classObj);
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
+        // get URLMapping
+        if (this.URLMapping.size()<=0) {
+            String packages = this.getInitParameter("packages");
+            String[] packageList = this.parsePackages(packages);
+            for (String packageName : packageList) {
+                String[] classNameList = this.parseClasses(packageName);
+                for (String className : classNameList) {
+                    Object classObj = null;
+                    try {
+                        classObj = this.loadClass(className);
+                        this.scanMethod(classObj, ctx, requestMethod, uri);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
 
-        for (Object obj : classObjects){
-            if(this.execMethod(obj,ctx,requestMethod,uri)){
-                break;
-            }
+        try {
+            this.execMethod(uri, requestMethod, ctx);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
 
     }
@@ -66,33 +69,51 @@ public class ActionServlet extends HttpServlet {
         this._do(request, response, "post", request.getRequestURI());
     }
 
-    private boolean execMethod(Object obj, RequestContext ctx, String requestMethod, String uri){
-        try {
-            if (obj!=null){
-                Method[] methods = obj.getClass().getDeclaredMethods();
-                for(Method method : methods){
-                    HttpAnnotation.URLMapping um = method.getAnnotation(HttpAnnotation.URLMapping.class);
-                    if (um != null){
-                        if (um.uri().toLowerCase().equals(uri)){
-                            if (um.method().toLowerCase().equals(requestMethod)){
-                                Debug.println("REQUEST: " + um.method() + "," + um.uri() + " METHOD: " + method.getName());
-                                method.invoke(obj, ctx);
-                                return true;
-                            }else if(um.method().toLowerCase().equals("all")){
-                                Debug.println("REQUEST: "+um.method()+","+um.uri()+" METHOD: "+method.getName());
-                                method.invoke(obj, ctx);
-                                return true;
-                            }
-                        }
-                    }
+    /**
+     * scan and cache method url map
+     * @param obj
+     * @param ctx
+     * @param requestMethod
+     * @param uri
+     */
+    private void scanMethod(Object obj, RequestContext ctx, String requestMethod, String uri){
+        if (obj!=null){
+            Method[] methods = obj.getClass().getDeclaredMethods();
+            for(Method method : methods){
+                Map<String, Object> action = new HashMap<String, Object>();
+
+                HttpAnnotation.URLMapping um = method.getAnnotation(HttpAnnotation.URLMapping.class);
+                if (um != null && um.uri().trim().length() > 0){
+                    Debug.println("REQUEST: " + "[" + um.method().toUpperCase() + "]" + um.uri() +
+                            " METHOD: " + obj.getClass().getName() + "." + method.getName());
+
+                    action.put("HttpMethod", um.method().toLowerCase());
+                    action.put("Class", obj);
+                    action.put("Method", method);
+                    this.URLMapping.put(um.uri(), action);
                 }
             }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
         }
-        return false;
+    }
+
+    /**
+     * execute method
+     * @param uri
+     * @param requestMethod
+     * @param ctx
+     * @throws InvocationTargetException
+     * @throws IllegalAccessException
+     */
+    public void execMethod(String uri, String requestMethod, RequestContext ctx) throws InvocationTargetException, IllegalAccessException {
+        Map<String, Object> action = (Map<String, Object>) this.URLMapping.get(uri);
+        if (action!=null) {
+            String reqMethod = (String) action.get("HttpMethod");
+            if (reqMethod.equals(requestMethod)) {
+                Method method = (Method) action.get("Method");
+                Object _class = action.get("Class");
+                method.invoke(_class, ctx);
+            }
+        }
     }
 
     /**

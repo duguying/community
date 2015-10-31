@@ -21,10 +21,6 @@ public class RequestContext {
         this.response = response;
     }
 
-    public void test(){
-        Debug.println("hello from RequestContext");
-    }
-
     public HttpServletRequest getRequest(){
         return this.request;
     }

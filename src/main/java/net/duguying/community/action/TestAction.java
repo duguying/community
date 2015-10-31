@@ -12,7 +12,6 @@ public class TestAction {
     @HttpAnnotation.URLMapping(uri = "/hello/world", method = "get")
     public void Index(RequestContext ctx) throws IOException {
         System.out.println("hello world from Index method");
-        ctx.test();
         ctx.write("hello world");
     }
 }
