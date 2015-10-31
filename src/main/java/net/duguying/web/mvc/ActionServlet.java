@@ -4,6 +4,7 @@ import net.duguying.community.tool.CommonTool;
 import net.duguying.web.debug.Debug;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.apache.velocity.app.VelocityEngine;
 
 import javax.servlet.ServletException;
@@ -245,6 +246,8 @@ public class ActionServlet extends HttpServlet {
         this.TPL_DIR = (new File(RequestContext.root())).getParent() + File.separator + templatesDirName;
         Properties p = new Properties();
         p.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, this.TPL_DIR);
+        p.setProperty(Velocity.INPUT_ENCODING, "UTF-8");
+        p.setProperty(Velocity.OUTPUT_ENCODING, "UTF-8");
         this.VE = new VelocityEngine();
         this.VE.init(p);
     }

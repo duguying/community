@@ -19,6 +19,7 @@ public class RequestContext {
     private static String root;
     private String uri;
     private Map<String,Object> URIParams;
+    private String header = "text/html; charset=utf-8";
 
     public RequestContext(HttpServletRequest request, HttpServletResponse response){
         this.request = request;
@@ -43,11 +44,13 @@ public class RequestContext {
     }
 
     public void write(String content) throws IOException {
+        response.setContentType(this.header);
         PrintWriter out = response.getWriter();
         out.print(content);
     }
 
     public void writeln(String content) throws IOException {
+        response.setContentType(this.header);
         PrintWriter out = response.getWriter();
         out.println(content);
     }

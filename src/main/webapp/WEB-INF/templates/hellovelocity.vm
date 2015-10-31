@@ -1,3 +1,12 @@
-hello velocity
-
-$CommonTool.test()
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试网页</title>
+</head>
+<body>
+<p>velocity模版引擎测试</p>
+<p>$CommonTool.test()</p>
+<font style="color: red;">自己造轮子</font>
+</body>
+</html>
