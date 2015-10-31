@@ -1,6 +1,10 @@
 package net.duguying.web.mvc;
 
+import net.duguying.community.tool.CommonTool;
 import net.duguying.web.debug.Debug;
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -8,12 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +24,17 @@ import java.util.regex.Pattern;
  */
 public class ActionServlet extends HttpServlet {
     private Map<String, Object> URLMapping = new HashMap<String, Object>();
+    private String TPL_DIR;
+    private VelocityEngine VE = null;
+    private VelocityContext VTX = null;
+
+    public void init() throws ServletException {
+        super.init();
+
+        // initial velocity
+        this.initVelocity();
+        this.loadVelocityTools();
+    }
     
     /**
      * do for request
@@ -133,7 +146,7 @@ public class ActionServlet extends HttpServlet {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    public void execMethod(String uri, String requestMethod, RequestContext ctx) throws InvocationTargetException, IllegalAccessException {
+    public void execMethod(String uri, String requestMethod, RequestContext ctx) throws InvocationTargetException, IllegalAccessException, IOException {
         Map<String, Object> action = (Map<String, Object>) this.URLMapping.get(uri);
         if (action!=null) {
             String reqMethod = (String) action.get("HttpMethod");
@@ -155,6 +168,12 @@ public class ActionServlet extends HttpServlet {
                     Object _class = action.get("Class");
                     method.invoke(_class, ctx);
                     return;
+                }else{
+                    // velocity match
+                    if(this.hasVelocityTemplate(uri)){
+                        this.renderVelocityTemplate(uri, ctx);
+                        return;
+                    }
                 }
             }
         }
@@ -196,7 +215,6 @@ public class ActionServlet extends HttpServlet {
 
     private Map<String,Object> matchSpecialAction(String uriMode, String reqUri){
         // ` :param `
-
         Pattern patternUriMode = Pattern.compile("/:([\\D]{1}[\\d\\D][^\\n\\r/]*)",Pattern.CASE_INSENSITIVE);
         Matcher matcherUriMode = patternUriMode.matcher(uriMode);
 
@@ -216,6 +234,69 @@ public class ActionServlet extends HttpServlet {
             return params;
         }else{
             return null;
+        }
+    }
+
+    /**
+     * initial velocity engine
+     */
+    private void initVelocity(){
+        String templatesDirName = this.getInitParameter("velocity-template");
+        this.TPL_DIR = (new File(RequestContext.root())).getParent() + File.separator + templatesDirName;
+        Properties p = new Properties();
+        p.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, this.TPL_DIR);
+        this.VE = new VelocityEngine();
+        this.VE.init(p);
+    }
+
+    /**
+     * is uri mapping velocity file exist
+     * @param uri
+     * @return
+     */
+    private boolean hasVelocityTemplate(String uri){
+        String uriPath = uri.replace("/", File.separator);
+        String templatesFile = this.TPL_DIR + uriPath + ".vm";
+        File file = new File(templatesFile);
+        if(file.exists()){
+            return true;
+        }else {
+            String indexFile = templatesFile.replaceAll("\\.vm$", File.separator + "index.vm");
+            File idxFile = new File(indexFile);
+            return idxFile.exists();
+        }
+    }
+
+    /**
+     * load velocity tools
+     */
+    private void loadVelocityTools(){
+        this.VTX = new VelocityContext();
+        this.VTX.put("CommonTool",new CommonTool());
+    }
+
+    /**
+     * rendering velocity templates
+     * @param uri
+     */
+    private void renderVelocityTemplate(String uri, RequestContext ctx) throws IOException {
+        String templatesFile = this.TPL_DIR + uri.replace("/", File.separator) + ".vm";
+        File file = new File(templatesFile);
+        Template t = null;
+        if(!file.exists()){
+            String indexFile = templatesFile.replaceAll("\\.vm$", File.separator + "index.vm");
+            file = new File(indexFile);
+            if (file.exists()){
+                t = this.VE.getTemplate(uri.replace("/", File.separator) + File.separator + "index.vm");
+            }
+        }else{
+            t = this.VE.getTemplate(uri.replace("/", File.separator) + ".vm");
+        }
+
+        if (t!=null){
+            StringWriter writer = new StringWriter();
+            t.merge(this.VTX,writer);
+            ctx.write(writer.toString());
         }
     }
 }

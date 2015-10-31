@@ -11,6 +11,14 @@
             <param-name>packages</param-name>
             <param-value>net.duguying.community.action</param-value>
         </init-param>
+        <init-param>
+            <param-name>velocity-template</param-name>
+            <param-value>templates</param-value>
+        </init-param>
+        <init-param>
+            <param-name>velocity-tool</param-name>
+            <param-value>net.duguying.community.tool</param-value>
+        </init-param>
     </servlet>
 	
 	<servlet-mapping>
