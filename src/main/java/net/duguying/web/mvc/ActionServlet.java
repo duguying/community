@@ -34,22 +34,22 @@ public class ActionServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
 
-        // initial velocity
-        this.initVelocity();
-        try {
-            this.loadVelocityTools();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        // hello world
+        Debug.println("!!!  HELLO WORLD  !!!");
+
         // action prefix
         String prefix = this.getInitParameter("action-prefix");
         if (prefix!=null){
             this.PREFIX = prefix;
         }
+
+        // scan uri mapping
+        this.scanMethod();
+
+        // initial velocity
+        this.initVelocity();
+        this.loadVelocityTools();
+
     }
     
     /**
@@ -60,27 +60,6 @@ public class ActionServlet extends HttpServlet {
      */
     private void _do(HttpServletRequest request, HttpServletResponse response, String requestMethod, String uri) throws IOException {
         RequestContext ctx = new RequestContext(request, response);
-        // get URLMapping
-        if (this.URLMapping.size()<=0) {
-            String packages = this.getInitParameter("packages");
-            String[] packageList = this.parsePackages(packages);
-            for (String packageName : packageList) {
-                String[] classNameList = this.parseClasses(packageName);
-                for (String className : classNameList) {
-                    Object classObj = null;
-                    try {
-                        classObj = this.loadClass(className);
-                        this.scanMethod(classObj, requestMethod, uri);
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InstantiationException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
 
         try {
             this.execMethod(uri, requestMethod, ctx);
@@ -122,28 +101,53 @@ public class ActionServlet extends HttpServlet {
 
     /**
      * scan and cache method url map
-     * @param obj
-     * @param requestMethod
-     * @param uri
      */
-    private void scanMethod(Object obj, String requestMethod, String uri){
-        if (obj!=null){
-            Method[] methods = obj.getClass().getDeclaredMethods();
-            for(Method method : methods){
-                Map<String, Object> action = new HashMap<String, Object>();
+    private void scanMethod() {
 
-                HttpAnnotation.URLMapping um = method.getAnnotation(HttpAnnotation.URLMapping.class);
-                if (um != null && um.uri().trim().length() > 0){
-                    Debug.println("[URI_MAPPING] REQUEST: " + "[" + um.method().toUpperCase() + "]" + this.filtSpecialUriChars(um.uri()) +
-                            " METHOD: " + obj.getClass().getName() + "." + method.getName());
+        // get URLMapping
+        if (this.URLMapping.size()<=0) {
+            String packages = this.getInitParameter("packages");
+            String[] packageList = this.parsePackages(packages);
+            for (String packageName : packageList) {
+                String[] classNameList = this.parseClasses(packageName);
+                for (String className : classNameList) {
+                    // load class
+                    Object classObj = null;
+                    try {
+                        classObj = this.loadClass(className);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    }
 
-                    action.put("HttpMethod", um.method().toLowerCase());
-                    action.put("Class", obj);
-                    action.put("Method", method);
-                    this.URLMapping.put(this.filtSpecialUriChars(um.uri()), action);
+                    // parse mapping and cache
+                    if (classObj!=null){
+                        Method[] methods = classObj.getClass().getDeclaredMethods();
+                        for(Method method : methods){
+                            Map<String, Object> action = new HashMap<String, Object>();
+
+                            HttpAnnotation.URLMapping um = method.getAnnotation(HttpAnnotation.URLMapping.class);
+                            if (um != null && um.uri().trim().length() > 0){
+                                Debug.println("[URI_MAPPING] REQUEST: " + "[" + um.method().toUpperCase() + "]" + this.filtSpecialUriChars(um.uri()) +
+                                        " METHOD: " + classObj.getClass().getName() + "." + method.getName());
+
+                                action.put("HttpMethod", um.method().toLowerCase());
+                                action.put("Class", classObj);
+                                action.put("Method", method);
+                                this.URLMapping.put(this.filtSpecialUriChars(um.uri()), action);
+                            }
+                        }
+                    }
+
                 }
             }
         }
+
+
+
     }
 
     public String filtSpecialUriChars(String uri){
@@ -302,7 +306,7 @@ public class ActionServlet extends HttpServlet {
     /**
      * load velocity tools
      */
-    private void loadVelocityTools() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    private void loadVelocityTools() {
         this.VTX = new VelocityContext();
 
         if (this.VelocityTools.size()<=0){
@@ -311,8 +315,22 @@ public class ActionServlet extends HttpServlet {
             for (String packageName : packageArray){
                 String[] classArray = this.parseClasses(packageName);
                 for (String className : classArray){
-                    Object classObject = this.loadClass(className);
-                    VelocityTools.put(classObject.getClass().getSimpleName(),classObject);
+                    // load class
+                    Object classObject = null;
+                    try {
+                        classObject = this.loadClass(className);
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (classObject!=null){
+                        VelocityTools.put(classObject.getClass().getSimpleName(),classObject);
+                    }
+
                 }
             }
         }
