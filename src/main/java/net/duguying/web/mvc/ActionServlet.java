@@ -2,6 +2,7 @@ package net.duguying.web.mvc;
 
 import net.duguying.community.tool.CommonTool;
 import net.duguying.web.debug.Debug;
+import net.duguying.web.orm.DBManager;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
@@ -49,6 +50,9 @@ public class ActionServlet extends HttpServlet {
         // initial velocity
         this.initVelocity();
         this.loadVelocityTools();
+
+        // initial database connection
+        DBManager.ME.getConnection();
 
     }
     
@@ -192,14 +196,15 @@ public class ActionServlet extends HttpServlet {
                     Object _class = action.get("Class");
                     method.invoke(_class, ctx);
                     return;
-                }else{
-                    // velocity match
-                    if(this.hasVelocityTemplate(uri)){
-                        this.renderVelocityTemplate(uri, ctx);
-                        return;
-                    }
                 }
             }
+
+            // match velocity mode
+            if(this.hasVelocityTemplate(uri)){
+                this.renderVelocityTemplate(uri, ctx);
+                return;
+            }
+
         }
     }
 
@@ -291,6 +296,11 @@ public class ActionServlet extends HttpServlet {
      * @return
      */
     private boolean hasVelocityTemplate(String uri){
+        // file or directory start with _ ignored
+        if (uri.contains("/_")){
+            return false;
+        }
+
         String uriPath = uri.replace("/", File.separator);
         String templatesFile = this.TPL_DIR + uriPath + ".vm";
         File file = new File(templatesFile);

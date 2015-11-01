@@ -37,10 +37,10 @@ public class TestAction {
         ctx.writeln("here is regexp router test, error");
     }
 
-    @HttpAnnotation.URLMapping(uri = "/.*")
-    public void regexpStarRouter(RequestContext ctx) throws IOException {
-        ctx.writeln("here is regexp router test, star");
-    }
+//    @HttpAnnotation.URLMapping(uri = "/.*")
+//    public void regexpStarRouter(RequestContext ctx) throws IOException {
+//        ctx.writeln("here is regexp router test, star");
+//    }
 
     @HttpAnnotation.URLMapping(uri = "@404")
     public void page404(RequestContext ctx) throws IOException {
