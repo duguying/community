@@ -37,10 +37,10 @@ public class RequestContext {
     }
 
     public final static String root() {
-        if(root!=null && root.trim().length()>0){
-            return root;
+        if(root==null || root.trim().length()>0){
+            root = RequestContext.class.getResource("/").getFile();
         }
-        return RequestContext.class.getResource("/").getFile();
+        return root;
     }
 
     public void write(String content) throws IOException {

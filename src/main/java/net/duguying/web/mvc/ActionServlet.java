@@ -29,13 +29,22 @@ public class ActionServlet extends HttpServlet {
     private VelocityEngine VE = null;
     private VelocityContext VTX = null;
     private String PREFIX = "";
+    private Map<String,Object> VelocityTools = new HashMap<String, Object>();
 
     public void init() throws ServletException {
         super.init();
 
         // initial velocity
         this.initVelocity();
-        this.loadVelocityTools();
+        try {
+            this.loadVelocityTools();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         // action prefix
         String prefix = this.getInitParameter("action-prefix");
         if (prefix!=null){
@@ -125,7 +134,7 @@ public class ActionServlet extends HttpServlet {
 
                 HttpAnnotation.URLMapping um = method.getAnnotation(HttpAnnotation.URLMapping.class);
                 if (um != null && um.uri().trim().length() > 0){
-                    Debug.println("REQUEST: " + "[" + um.method().toUpperCase() + "]" + this.filtSpecialUriChars(um.uri()) +
+                    Debug.println("[URI_MAPPING] REQUEST: " + "[" + um.method().toUpperCase() + "]" + this.filtSpecialUriChars(um.uri()) +
                             " METHOD: " + obj.getClass().getName() + "." + method.getName());
 
                     action.put("HttpMethod", um.method().toLowerCase());
@@ -191,7 +200,7 @@ public class ActionServlet extends HttpServlet {
     }
 
     /**
-     * 加载类
+     * load class
      * @param cls
      * @return
      * @throws ClassNotFoundException
@@ -203,10 +212,20 @@ public class ActionServlet extends HttpServlet {
         return action;
     }
 
+    /**
+     * parse packages from configuration
+     * @param packages
+     * @return
+     */
     private String[] parsePackages(String packages){
         return packages.split(",");
     }
 
+    /**
+     * parse classes from package
+     * @param packageName
+     * @return
+     */
     private String[] parseClasses(String packageName){
         List<String> fileNameList = new ArrayList<String>();
         String dir = RequestContext.root()+ File.separator +packageName.replaceAll("\\.","/");
@@ -214,7 +233,7 @@ public class ActionServlet extends HttpServlet {
         File[] list = file.listFiles();
         for (File f : list){
             String filename = f.getName();
-            if (filename.endsWith("Action.class")){
+            if (filename.endsWith(".class")){
                 String className = filename.replace(".class","");
                 fileNameList.add(packageName+"."+className);
             }
@@ -283,9 +302,26 @@ public class ActionServlet extends HttpServlet {
     /**
      * load velocity tools
      */
-    private void loadVelocityTools(){
+    private void loadVelocityTools() throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         this.VTX = new VelocityContext();
-        this.VTX.put("CommonTool",new CommonTool());
+
+        if (this.VelocityTools.size()<=0){
+            String packages = this.getInitParameter("velocity-tool");
+            String[] packageArray = this.parsePackages(packages);
+            for (String packageName : packageArray){
+                String[] classArray = this.parseClasses(packageName);
+                for (String className : classArray){
+                    Object classObject = this.loadClass(className);
+                    VelocityTools.put(classObject.getClass().getSimpleName(),classObject);
+                }
+            }
+        }
+
+        for (Map.Entry<String, Object> entry : this.VelocityTools.entrySet()) {
+            String key = entry.getKey();
+            Object classObject = entry.getValue();
+            this.VTX.put(key,classObject);
+        }
     }
 
     /**
