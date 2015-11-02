@@ -52,7 +52,7 @@ public class ActionServlet extends HttpServlet {
         this.loadVelocityTools();
 
         // initial database connection
-        DBManager.ME.getConnection();
+//        DBManager.ME.getConnection();
 
     }
     
