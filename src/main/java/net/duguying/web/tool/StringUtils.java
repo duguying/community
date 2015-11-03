@@ -13,7 +13,9 @@ public class StringUtils {
         for (int i = 0; i < len; i++) {
             char c=param.charAt(i);
             if (Character.isUpperCase(c)){
-                sb.append('_');
+                if (i!=0){
+                    sb.append('_');
+                }
                 sb.append(Character.toLowerCase(c));
             }else{
                 sb.append(c);

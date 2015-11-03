@@ -4,7 +4,7 @@ import net.duguying.web.orm.Pojo;
 /**
  * Created by duguying on 2015/11/1.
  */
-public class User extends Pojo {
+public class Users extends Pojo {
     private long id;
     private String username;
     private String password;
@@ -58,5 +58,12 @@ public class User extends Pojo {
 
     public void setVarified(String varified){
         this.varified = varified;
+    }
+
+
+    public static void main(String[] arg){
+        Users user = new Users();
+        Users result = user.Get(8);
+        System.out.println(result.getUsername());
     }
 }
