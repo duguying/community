@@ -62,17 +62,10 @@ public class Users extends Pojo {
 
 
     public static void main(String[] arg){
-//        Users user = new Users();
-//        Users result = user.Get(8);
-//        System.out.println(result.getUsername());
         Users user = new Users();
-        user.setUsername("rex1");
-        user.setEmail("root@duguying.net");
-        user.setPassword("asdfakldsfja");
-        user.setSalt("asdf");
-        user.setVarified("N");
-
-        long id =user.Save();
-        System.out.println(id);
+        Users result = user.Get(9);
+        result.setPassword("123456");
+        boolean r = result.Update();
+        System.out.println(r);
     }
 }

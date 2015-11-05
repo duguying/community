@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by duguying on 2015/10/30.
@@ -20,6 +21,12 @@ public class Pojo {
         return StringUtils.camelToUnderline(this.getClass().getSimpleName());
     }
 
+    /**
+     * Get method
+     * @param id
+     * @param <T>
+     * @return
+     */
     public <T extends Pojo> T Get(long id){
         String sql = "select * from "+TableName()+" where id=?";
         try {
@@ -30,6 +37,10 @@ public class Pojo {
         return null;
     }
 
+    /**
+     * Save method
+     * @return
+     */
     public long Save(){
         if (this.getId() > 0){
             this._InsertObject(this);
@@ -37,6 +48,40 @@ public class Pojo {
             this.setId(this._InsertObject(this));
         }
         return this.getId();
+    }
+
+    /**
+     * Update method
+     * @return
+     */
+    public boolean Update() {
+        Map<String, Object> map = ListInsertableFields();
+        Object id = getId();
+        Set<Map.Entry<String, Object>> entrys = map.entrySet();
+        Object[] params = new Object[entrys.size()];
+        StringBuilder sql = new StringBuilder("UPDATE ").append(TableName()).append(" SET ");
+        int index = 0;
+        for (Map.Entry<String, Object> entry : entrys) {
+            sql.append("`"+entry.getKey()+"`").append("=?,");
+            params[index] = entry.getValue();
+            index++;
+        }
+        sql.replace(sql.length() - 1, sql.length(), " WHERE id=");
+        sql.append(id);
+        return QueryHelper.update(sql.toString(), params) > 0;
+    }
+
+    /**
+     * Delete method
+     * @return
+     */
+    public boolean Delete(){
+        if (getId()>0){
+            String sql = "delete from "+TableName()+" where id=?";
+            return QueryHelper.update(sql, getId()) > 0;
+        }else {
+            return false;
+        }
     }
 
     public long getId() {
