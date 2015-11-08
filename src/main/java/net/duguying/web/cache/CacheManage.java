@@ -26,17 +26,25 @@ public class CacheManage {
 
     }
 
-    public void createCache(String region){
+    /**
+     * 创建缓存域
+     * @param region
+     * @return
+     */
+    private Cache createCache(String region){
         Cache cache = this.cacheManager.createCache(region,
                 CacheConfigurationBuilder.newCacheConfigurationBuilder().buildConfig(String.class, Object.class));
         this.CMap.put(region, cache);
+        return cache;
     }
 
-    public Cache getCache(String region){
-        return this.CMap.get(region);
-    }
-
-    private Object _get(String region, String key){
+    /**
+     * 获取值
+     * @param region 区域
+     * @param key
+     * @return
+     */
+    public Object get(String region, String key){
         Cache cache = this.CMap.get(region);
         if (cache == null){
             return null;
@@ -44,9 +52,41 @@ public class CacheManage {
         return cache.get(key);
     }
 
-    private void _put(String region, String key, Object value){
+    /**
+     * 存储键值
+     * @param region 区域
+     * @param key
+     * @param value
+     */
+    public void put(String region, String key, Object value){
         Cache cache = this.CMap.get(region);
+        if (cache == null){
+            cache = this.createCache(region);
+        }
         cache.put(key,value);
+    }
+
+    /**
+     * 删除指定键值
+     * @param region
+     * @param key
+     */
+    public void del(String region, String key){
+        Cache cache = this.CMap.get(region);
+        if (cache == null){
+            return;
+        }
+        cache.remove(key);
+    }
+
+    /**
+     * 清理掉整个region
+     * @param region
+     */
+    public void clearRegion(String region){
+        Cache cache = this.CMap.get(region);
+        cache.clear();
+        this.CMap.remove(region);
     }
 
     protected void finalize() throws Throwable {
@@ -57,9 +97,8 @@ public class CacheManage {
     public static void main(String[] arg){
         Users user = new Users();
         user.setUsername("lijun");
-        CacheManage.ME.createCache("MyCache");
-        CacheManage.ME._put("MyCache", "hello", user);
-        Users u = (Users) CacheManage.ME._get("MyCache", "hello");
+        CacheManage.ME.put("MyCache", "hello", user);
+        Users u = (Users) CacheManage.ME.get("MyCache", "hello");
         System.out.println(u.getUsername());
     }
 }

@@ -1,5 +1,10 @@
 package net.duguying.community.bean;
+import net.duguying.web.orm.CacheAnnotation;
+import net.duguying.web.orm.DBManager;
 import net.duguying.web.orm.Pojo;
+import net.duguying.web.orm.QueryHelper;
+
+import java.util.List;
 
 /**
  * Created by duguying on 2015/11/1.
@@ -61,11 +66,26 @@ public class Users extends Pojo {
     }
 
 
+    @CacheAnnotation.ListCache
+    public List<Long> queryTop10(){
+        String sql = "select id from "+TableName()+" limit 10";
+        return this.query(sql);
+    }
+
+
     public static void main(String[] arg){
         Users user = new Users();
-        Users result = user.Get(9);
-        result.setPassword("123456");
-        boolean r = result.Update();
-        System.out.println(r);
+//        Users result = user.Get(9);
+//        result.setPassword("123456");
+//        boolean r = result.Update();
+//        System.out.println(result.getUsername());
+//        Users u2 = new Users();
+//        Users r2 = u2.Get(9);
+//        System.out.println(r2.getUsername());
+//        r2.setUsername("change");
+//        r2.Update();
+//        Users r3 = u2.Get(9);
+//        System.out.println(r3.getUsername());
+        user.queryTop10();
     }
 }

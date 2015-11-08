@@ -1,12 +1,17 @@
 package net.duguying.web.orm;
 
+import net.duguying.web.cache.CacheManage;
 import net.duguying.web.tool.StringUtils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbutils.DbUtils;
+import org.apache.commons.dbutils.QueryLoader;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,9 +33,16 @@ public class Pojo {
      * @return
      */
     public <T extends Pojo> T Get(long id){
+        T cachedObject = (T) CacheManage.ME.get(TableName(), "Object"+id);
+        if (cachedObject != null){
+            return cachedObject;
+        }
+
         String sql = "select * from "+TableName()+" where id=?";
         try {
-            return (T)QueryHelper.read(this.getClass(),sql,id);
+            T object = (T)QueryHelper.read(this.getClass(),sql,id);
+            CacheManage.ME.put(TableName(), "Object"+id, object);
+            return object;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -47,6 +59,7 @@ public class Pojo {
         }else {
             this.setId(this._InsertObject(this));
         }
+        clearListCache();
         return this.getId();
     }
 
@@ -68,6 +81,9 @@ public class Pojo {
         }
         sql.replace(sql.length() - 1, sql.length(), " WHERE id=");
         sql.append(id);
+        // remove old cache
+        CacheManage.ME.del(TableName(), "Object"+id);
+        clearListCache();
         return QueryHelper.update(sql.toString(), params) > 0;
     }
 
@@ -78,6 +94,7 @@ public class Pojo {
     public boolean Delete(){
         if (getId()>0){
             String sql = "delete from "+TableName()+" where id=?";
+            clearListCache();
             return QueryHelper.update(sql, getId()) > 0;
         }else {
             return false;
@@ -159,5 +176,58 @@ public class Pojo {
             pojo_bean = null;
         }
         return 0;
+    }
+
+    /**
+     * 清除列表缓存
+     */
+    private void clearListCache(){
+        // TODO
+
+    }
+
+    /**
+     * Cached Query
+     * @return
+     */
+    protected List<Long> query(String sql, Object... params){
+
+
+        StackTraceElement[] stack = new Throwable().getStackTrace();
+        if (stack.length<2){
+            return null;
+        }
+        String caller = stack[1].getMethodName();
+
+        Object cachedList = CacheManage.ME.get("__List", this.serializeMethodName(stack[1], sql));
+        if (cachedList != null) {
+            return (List<Long>) cachedList;
+        }
+
+        List<Long> list = QueryHelper.query(sql, params);
+
+        Class classObject = this.getClass();
+        Method[] methods = classObject.getMethods();
+        for (Method method : methods){
+            if (method.getName().equals(caller)){
+                Annotation[] anno = method.getAnnotations();
+
+                // TODO
+                CacheManage.ME.put("__List", this.serializeMethodName(method,sql), list);
+            }
+        }
+        return list;
+    }
+
+    private String serializeMethodName(Method method, String sql){
+        String methodName = this.TableName() +"-"+ method.getName();
+        String extraKey = StringUtils.MD5(sql);
+        return methodName+"::"+extraKey;
+    }
+
+    private String serializeMethodName(StackTraceElement stack, String sql){
+        String methodName = this.TableName() +"-"+ stack.getMethodName();
+        String extraKey = StringUtils.MD5(sql);
+        return methodName+"::"+extraKey;
     }
 }
