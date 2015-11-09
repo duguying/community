@@ -1,12 +1,15 @@
 package net.duguying.web.orm;
 
+import net.duguying.web.debug.Debug;
 import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.apache.commons.dbutils.handlers.*;
 import org.apache.commons.lang.SystemUtils;
 
+import java.math.BigInteger;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,16 +17,35 @@ import java.util.List;
  * Created by duguying on 2015/11/1.
  */
 public class QueryHelper {
+    private final static Connection conn = DBManager.ME.getConnection();
+    private final static QueryRunner qr = new QueryRunner();
+
+    private final static ColumnListHandler _g_columnListHandler = new ColumnListHandler() {
+        @Override
+        protected Object handleRow(ResultSet rs) throws SQLException {
+            Object obj = super.handleRow(rs);
+            if (obj instanceof BigInteger)
+                return ((BigInteger) obj).longValue();
+            return obj;
+        }
+
+    };
+    private final static ScalarHandler _g_scaleHandler = new ScalarHandler() {
+        @Override
+        public Object handle(ResultSet rs) throws SQLException {
+            Object obj = super.handle(rs);
+            if (obj instanceof BigInteger)
+                return ((BigInteger) obj).longValue();
+            return obj;
+        }
+    };
+
     public static <T> T read(Class<T> beanClass, String sql, Object... params) throws SQLException {
-        Connection conn = DBManager.ME.getConnection();
-        QueryRunner qr = new QueryRunner();
         System.out.println("[SQL] "+ new Date(System.currentTimeMillis()).toString() + " - " + sql);
         return (T) qr.query(conn, sql, new BeanHandler(beanClass), params);
     }
 
     public static long create(String sql, Object... params){
-        Connection conn = DBManager.ME.getConnection();
-        QueryRunner qr = new QueryRunner();
         long id = 0;
         try {
             System.out.println("[SQL] "+ new Date(System.currentTimeMillis()).toString() + " - " + sql);
@@ -35,8 +57,6 @@ public class QueryHelper {
     }
 
     public static long update(String sql, Object... params){
-        Connection conn = DBManager.ME.getConnection();
-        QueryRunner qr = new QueryRunner();
         long result = 0;
         try {
             System.out.println("[SQL] "+ new Date(System.currentTimeMillis()).toString() + " - " + sql);
@@ -48,8 +68,25 @@ public class QueryHelper {
     }
 
     // TODO
-    public static List<Long> query(String sql, Object... params){
-        return null;
+    public static <T> List<T> query(Class<T> beanClass ,String sql, Object... params) throws SQLException {
+        System.out.println("[SQL] "+ new Date(System.currentTimeMillis()).toString() + " - " + sql);
+        return (List<T>) qr.query(conn, sql, _IsPrimitive(beanClass) ? _g_columnListHandler	: new BeanListHandler(beanClass), params);
+    }
+
+    private final static List<Class<?>> PrimitiveClasses = new ArrayList<Class<?>>() {
+        {
+            add(Long.class);
+            add(Integer.class);
+            add(Number.class);
+            add(String.class);
+            add(java.util.Date.class);
+            add(java.sql.Date.class);
+            add(java.sql.Timestamp.class);
+        }
+    };
+
+    private final static boolean _IsPrimitive(Class<?> cls) {
+        return cls.isPrimitive() || PrimitiveClasses.contains(cls);
     }
 
     public static void main(String[] arg){

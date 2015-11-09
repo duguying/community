@@ -6,7 +6,9 @@ import org.ehcache.CacheManager;
 import org.ehcache.CacheManagerBuilder;
 import org.ehcache.config.CacheConfigurationBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,6 +19,7 @@ public class CacheManage {
 
     private CacheManager cacheManager = null;
     private Map<String, Cache> CMap = new HashMap<String, Cache>();
+    private static Map<String, List<String>> CKeyList = new HashMap<String, List<String>>();
 
     public CacheManage(){
         this.cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
@@ -59,6 +62,10 @@ public class CacheManage {
      * @param value
      */
     public void put(String region, String key, Object value){
+        if (value == null){
+            return;
+        }
+
         Cache cache = this.CMap.get(region);
         if (cache == null){
             cache = this.createCache(region);
@@ -100,5 +107,35 @@ public class CacheManage {
         CacheManage.ME.put("MyCache", "hello", user);
         Users u = (Users) CacheManage.ME.get("MyCache", "hello");
         System.out.println(u.getUsername());
+    }
+
+    /**
+     * 添加列表缓存键到map
+     * @param table
+     * @param key
+     */
+    public void addList(String table, String key){
+        List<String> list = CacheManage.CKeyList.get(table);
+        if (list == null){
+            list = new ArrayList<String>();
+            list.add(key);
+            CacheManage.CKeyList.put(table, list);
+        }else {
+            list.add(key);
+        }
+    }
+
+    /**
+     * 清除table的所有列表缓存
+     * @param table
+     */
+    public void clearList(String table){
+        List<String> list = CacheManage.CKeyList.get(table);
+        for (int i=0; i<list.size(); i++){
+            String key = list.get(i);
+            CacheManage.ME.del("__List", key);
+            list.remove(key);
+        }
+        CacheManage.CKeyList.remove(table);
     }
 }

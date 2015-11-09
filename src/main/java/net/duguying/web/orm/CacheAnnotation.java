@@ -15,6 +15,6 @@ public @interface CacheAnnotation {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     public static @interface ListCache {
-        public String tables() default "_self_";
+        public String[] tables() default {};
     }
 }

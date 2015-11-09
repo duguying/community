@@ -182,15 +182,14 @@ public class Pojo {
      * 清除列表缓存
      */
     private void clearListCache(){
-        // TODO
-
+        CacheManage.ME.clearList(TableName());
     }
 
     /**
      * Cached Query
      * @return
      */
-    protected List<Long> query(String sql, Object... params){
+    protected <T> List<T> query(Class<T> beanClass, String sql, Object... params) throws SQLException {
 
 
         StackTraceElement[] stack = new Throwable().getStackTrace();
@@ -199,33 +198,51 @@ public class Pojo {
         }
         String caller = stack[1].getMethodName();
 
-        Object cachedList = CacheManage.ME.get("__List", this.serializeMethodName(stack[1], sql));
+        Object cachedList = CacheManage.ME.get("__List", this.serializeMethodName(stack[1], sql, params));
         if (cachedList != null) {
-            return (List<Long>) cachedList;
+            return (List<T>) cachedList;
         }
 
-        List<Long> list = QueryHelper.query(sql, params);
+        List<T> list = QueryHelper.query(beanClass, sql, params);
 
         Class classObject = this.getClass();
         Method[] methods = classObject.getMethods();
         for (Method method : methods){
             if (method.getName().equals(caller)){
-                Annotation[] anno = method.getAnnotations();
-
-                // TODO
-                CacheManage.ME.put("__List", this.serializeMethodName(method,sql), list);
+                CacheAnnotation.ListCache anno = method.getAnnotation(CacheAnnotation.ListCache.class);
+                String key = this.serializeMethodName(method, sql, params);
+                CacheManage.ME.put("__List", key, list);
+                String[] tables = anno.tables();
+                for (String table : tables){
+                    if (table != TableName()){
+                        CacheManage.ME.addList(table, key);
+                    }
+                }
+                CacheManage.ME.addList(TableName(), key);
             }
         }
         return list;
     }
 
-    private String serializeMethodName(Method method, String sql){
+    private String serializeMethodName(Method method, String sql, Object[] param){
+        String paramStr = "";
+        for (Object paramEle : param) {
+            paramStr += paramEle.toString();
+        }
+        sql += paramStr;
+
         String methodName = this.TableName() +"-"+ method.getName();
         String extraKey = StringUtils.MD5(sql);
         return methodName+"::"+extraKey;
     }
 
-    private String serializeMethodName(StackTraceElement stack, String sql){
+    private String serializeMethodName(StackTraceElement stack, String sql, Object[] param){
+        String paramStr = "";
+        for (Object paramEle : param) {
+            paramStr += paramEle.toString();
+        }
+        sql += paramStr;
+
         String methodName = this.TableName() +"-"+ stack.getMethodName();
         String extraKey = StringUtils.MD5(sql);
         return methodName+"::"+extraKey;
