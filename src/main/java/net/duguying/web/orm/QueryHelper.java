@@ -67,10 +67,15 @@ public class QueryHelper {
         return result;
     }
 
-    // TODO
     public static <T> List<T> query(Class<T> beanClass ,String sql, Object... params) throws SQLException {
         System.out.println("[SQL] "+ new Date(System.currentTimeMillis()).toString() + " - " + sql);
         return (List<T>) qr.query(conn, sql, _IsPrimitive(beanClass) ? _g_columnListHandler	: new BeanListHandler(beanClass), params);
+    }
+
+    public static long stat(String sql, Object... params) throws SQLException {
+        System.out.println("[SQL] "+ new Date(System.currentTimeMillis()).toString() + " - " + sql);
+        Number num = (Number) qr.query(conn, sql,	_g_scaleHandler, params);
+        return (num != null) ? num.longValue() : -1;
     }
 
     private final static List<Class<?>> PrimitiveClasses = new ArrayList<Class<?>>() {

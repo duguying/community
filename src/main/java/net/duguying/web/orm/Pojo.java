@@ -189,7 +189,7 @@ public class Pojo {
      * Cached Query
      * @return
      */
-    protected <T> List<T> query(Class<T> beanClass, String sql, Object... params) throws SQLException {
+    protected <T> List<T> Query(Class<T> beanClass, String sql, Object... params) throws SQLException {
         StackTraceElement[] stack = new Throwable().getStackTrace();
         if (stack.length<2){
             return null;
@@ -203,22 +203,7 @@ public class Pojo {
 
         List<T> list = QueryHelper.query(beanClass, sql, params);
 
-        Class classObject = this.getClass();
-        Method[] methods = classObject.getMethods();
-        for (Method method : methods){
-            if (method.getName().equals(caller)){
-                CacheAnnotation.ListCache anno = method.getAnnotation(CacheAnnotation.ListCache.class);
-                String key = this.serializeMethodName(method, sql, params);
-                CacheManage.ME.put("__List", key, list);
-                String[] tables = anno.tables();
-                for (String table : tables){
-                    if (table != TableName()){
-                        CacheManage.ME.addList(table, key);
-                    }
-                }
-                CacheManage.ME.addList(TableName(), key);
-            }
-        }
+        this.tryCacheData(caller, sql, list, params);
         return list;
     }
 
@@ -228,8 +213,48 @@ public class Pojo {
      * @param params
      * @return
      */
-    public long stat(String sql, Object... params){
-        return 0;
+    public long Stat(String sql, Object... params) throws SQLException {
+        StackTraceElement[] stack = new Throwable().getStackTrace();
+        if (stack.length<2){
+            return 0;
+        }
+        String caller = stack[1].getMethodName();
+
+        Object cachedCount = CacheManage.ME.get("__List", this.serializeMethodName(stack[1], sql, params));
+        if (cachedCount != null) {
+            return (Long) cachedCount;
+        }
+
+        long count = QueryHelper.stat(sql,params);
+
+        this.tryCacheData(caller, sql, count, params);
+        return count;
+    }
+
+    /**
+     * 尝试 cache -- 若有注解则cache
+     * @param caller
+     * @param sql
+     * @param data
+     * @param params
+     */
+    private void tryCacheData(String caller, String sql, Object data, Object... params){
+        Class classObject = this.getClass();
+        Method[] methods = classObject.getMethods();
+        for (Method method : methods){
+            if (method.getName().equals(caller)){
+                CacheAnnotation.ListCache anno = method.getAnnotation(CacheAnnotation.ListCache.class);
+                String key = this.serializeMethodName(method, sql, params);
+                CacheManage.ME.put("__List", key, data);
+                String[] tables = anno.tables();
+                for (String table : tables){
+                    if (table != TableName()){
+                        CacheManage.ME.addList(table, key);
+                    }
+                }
+                CacheManage.ME.addList(TableName(), key);
+            }
+        }
     }
 
     private String serializeMethodName(Method method, String sql, Object[] param){

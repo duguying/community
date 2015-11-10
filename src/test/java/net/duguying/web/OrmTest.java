@@ -19,7 +19,7 @@ public class OrmTest extends TestCase {
 //        } catch (SQLException e) {
 //            e.printStackTrace();
 //        }
-//
+
 //        UserLog userLog = new UserLog();
 //        userLog.setAction(1);
 //        userLog.setIp("127.0.0.1");
@@ -28,9 +28,19 @@ public class OrmTest extends TestCase {
 //        userLog.setUser(9);
 //        userLog.setCreate_time(new Date(System.currentTimeMillis()));
 //        userLog.Save();
-//
+
 //        try {
 //            users.queryTop10();
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        try {
+//            long count1 = users.countAll();
+//            System.out.println(count1);
+//
+//            long count2 = users.countAll();
+//            System.out.println(count2);
 //        } catch (SQLException e) {
 //            e.printStackTrace();
 //        }

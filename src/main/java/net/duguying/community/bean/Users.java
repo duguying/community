@@ -70,7 +70,13 @@ public class Users extends Pojo {
     @CacheAnnotation.ListCache(tables = {"users", "user_log"})
     public List<Long> queryTop10() throws SQLException {
         String sql = "select id from "+TableName()+" limit 10";
-        return this.query(Long.class,sql);
+        return this.Query(Long.class,sql);
+    }
+
+    @CacheAnnotation.ListCache(tables = {"users", "user_log"})
+    public Long countAll() throws SQLException {
+        String sql = "select count(id) from "+TableName();
+        return this.Stat(sql);
     }
 
 
