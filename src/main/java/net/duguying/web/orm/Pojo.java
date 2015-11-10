@@ -190,8 +190,6 @@ public class Pojo {
      * @return
      */
     protected <T> List<T> query(Class<T> beanClass, String sql, Object... params) throws SQLException {
-
-
         StackTraceElement[] stack = new Throwable().getStackTrace();
         if (stack.length<2){
             return null;
@@ -222,6 +220,16 @@ public class Pojo {
             }
         }
         return list;
+    }
+
+    /**
+     * 统计
+     * @param sql
+     * @param params
+     * @return
+     */
+    public long stat(String sql, Object... params){
+        return 0;
     }
 
     private String serializeMethodName(Method method, String sql, Object[] param){
