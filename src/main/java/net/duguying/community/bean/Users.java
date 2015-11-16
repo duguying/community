@@ -68,9 +68,9 @@ public class Users extends Pojo {
 
 
     @CacheAnnotation.ListCache(tables = {"users", "user_log"})
-    public List<Long> queryTop10() throws SQLException {
+    public List<Users> queryTop10() throws SQLException {
         String sql = "select id from "+TableName()+" limit 10";
-        return this.Query(Long.class,sql);
+        return LoadList(Users.class, Query(Long.class,sql));
     }
 
     @CacheAnnotation.ListCache(tables = {"users", "user_log"})
@@ -83,12 +83,12 @@ public class Users extends Pojo {
     public static void main(String[] arg){
         Users user = new Users();
         try {
-            List<Long> list1 = user.queryTop10();
+            List<Users> list1 = user.queryTop10();
             for (Object item : list1) {
                 System.out.println(item.toString());
             }
             System.out.println("=== end ===");
-            List<Long> list2 = user.queryTop10();
+            List<Users> list2 = user.queryTop10();
             for (Object item : list2) {
                 System.out.println(item);
             }

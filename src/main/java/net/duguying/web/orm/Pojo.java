@@ -11,6 +11,7 @@ import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -229,6 +230,58 @@ public class Pojo {
 
         this.tryCacheData(caller, sql, count, params);
         return count;
+    }
+
+    /**
+     * load list
+     * @param beanClass
+     * @param ids
+     * @param <T>
+     * @return
+     */
+    public <T extends Pojo> List<T>LoadList(Class<T> beanClass, List<Long> ids) {
+        List<T> list = new ArrayList<T>();
+        T obj = null;
+        try {
+            obj = (T)beanClass.newInstance();
+            for (int i = 0; i < ids.size(); i++) {
+                long id = ids.get(i);
+                T item = obj.Get(id);
+                list.add(item);
+            }
+            return list;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * load list
+     * @param beanClass
+     * @param ids
+     * @param <T>
+     * @return
+     */
+    public <T extends Pojo> List<T>LoadList(Class<T> beanClass, Long[] ids) {
+        List<T> list = new ArrayList<T>();
+        T obj = null;
+        try {
+            obj = (T)beanClass.newInstance();
+            for (int i = 0; i < ids.length; i++) {
+                long id = ids[i];
+                T item = obj.Get(id);
+                list.add(item);
+            }
+            return list;
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
