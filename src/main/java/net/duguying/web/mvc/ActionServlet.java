@@ -206,6 +206,8 @@ public class ActionServlet extends HttpServlet {
             }
 
             // not matched 404
+            HttpServletResponse response = ctx.getResponse();
+            response.setStatus(404);
             Map<String, Object> action_404 = (Map<String, Object>) this.URLMapping.get("@404");
             if (action_404!=null){
                 String reqMethod = (String) action_404.get("HttpMethod");
