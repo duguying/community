@@ -198,11 +198,12 @@ public class ActionServlet extends HttpServlet {
 
             // match velocity mode
             if(this.hasVelocityTemplate(uri)){
+                ctx.getResponse().setHeader("Content-Type","text/html");
                 this.renderVelocityTemplate(uri, ctx);
                 return;
             }
 
-            // TODO: 15/11/21 deal with static files
+            // deal with static files
             if(StaticService.fileExist(uri, ctx)){
                 StaticService.response(uri, ctx);
                 return;
