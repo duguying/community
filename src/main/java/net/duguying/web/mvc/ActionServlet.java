@@ -214,6 +214,8 @@ public class ActionServlet extends HttpServlet {
                     Object _class = action_404.get("Class");
                     method.invoke(_class, ctx);
                 }
+            }else {
+                ctx.writeln("404 page not found!");
             }
         }
     }

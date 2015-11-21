@@ -42,8 +42,8 @@ public class TestAction {
 //        ctx.writeln("here is regexp router test, star");
 //    }
 
-    @HttpAnnotation.URLMapping(uri = "@404")
+//    @HttpAnnotation.URLMapping(uri = "@404")
     public void page404(RequestContext ctx) throws IOException {
-        ctx.writeln("404 page not found!");
+        ctx.writeln("404 page not found! Orz...");
     }
 }
