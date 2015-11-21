@@ -205,6 +205,16 @@ public class ActionServlet extends HttpServlet {
                 return;
             }
 
+            // not matched 404
+            Map<String, Object> action_404 = (Map<String, Object>) this.URLMapping.get("@404");
+            if (action_404!=null){
+                String reqMethod = (String) action_404.get("HttpMethod");
+                if (reqMethod.equals(requestMethod) || reqMethod.equals("all")) {
+                    Method method = (Method) action_404.get("Method");
+                    Object _class = action_404.get("Class");
+                    method.invoke(_class, ctx);
+                }
+            }
         }
     }
 
