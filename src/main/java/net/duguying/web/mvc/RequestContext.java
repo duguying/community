@@ -43,6 +43,11 @@ public class RequestContext {
         return root;
     }
 
+    public final static String webroot() {
+        String rootpath = root();
+        return new File(new File(rootpath).getParent()).getParent();
+    }
+
     public void write(String content) throws IOException {
         response.setContentType(this.header);
         PrintWriter out = response.getWriter();

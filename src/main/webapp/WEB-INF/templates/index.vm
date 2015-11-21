@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>O'Framwork -- Simple Java MVC Web Framework</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<p>
+    <b>O'Framework</b> is a simple java MVC web framework.
+</p>
+
+<p>
+    <ul>
+        <li>Self Defination the router with Annotation</li>
+        <li>Velocity Support View, page router with <code>.vm</code> file</li>
+        <li>Ehcache Support ORM, auto cached and cache auto clean</li>
+    </ul>
+    <img src="/img/logo1.png" alt="logo">
+</p>
+
+</body>
+</html>

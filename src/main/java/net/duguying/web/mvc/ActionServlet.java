@@ -51,9 +51,6 @@ public class ActionServlet extends HttpServlet {
         this.initVelocity();
         this.loadVelocityTools();
 
-        // initial database connection
-//        DBManager.ME.getConnection();
-
     }
     
     /**
@@ -202,6 +199,12 @@ public class ActionServlet extends HttpServlet {
             // match velocity mode
             if(this.hasVelocityTemplate(uri)){
                 this.renderVelocityTemplate(uri, ctx);
+                return;
+            }
+
+            // TODO: 15/11/21 deal with static files
+            if(StaticService.fileExist(uri, ctx)){
+                StaticService.response(uri, ctx);
                 return;
             }
 
