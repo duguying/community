@@ -62,6 +62,8 @@ public class ActionServlet extends HttpServlet {
     private void _do(HttpServletRequest request, HttpServletResponse response, String requestMethod, String uri) throws IOException {
         RequestContext ctx = new RequestContext(request, response);
 
+        System.out.println("["+request.getMethod()+"]\t"+new Date(System.currentTimeMillis())+" "+uri);
+
         try {
             this.execMethod(uri, requestMethod, ctx);
         } catch (InvocationTargetException e) {

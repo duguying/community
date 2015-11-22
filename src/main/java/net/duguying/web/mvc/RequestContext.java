@@ -25,7 +25,6 @@ public class RequestContext {
         this.request = request;
         this.response = response;
         this.uri = request.getRequestURI();
-        Debug.println("[URI] "+uri);
     }
 
     public HttpServletRequest getRequest(){
