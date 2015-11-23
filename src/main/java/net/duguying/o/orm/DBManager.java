@@ -1,4 +1,4 @@
-package net.duguying.web.orm;
+package net.duguying.o.orm;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

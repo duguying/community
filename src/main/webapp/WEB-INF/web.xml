@@ -6,7 +6,7 @@
     
 	<servlet>
         <servlet-name>controller</servlet-name>
-        <servlet-class>net.duguying.web.mvc.ActionServlet</servlet-class>
+        <servlet-class>net.duguying.o.mvc.ActionServlet</servlet-class>
         <!--<init-param>-->
             <!--<param-name>action-prefix</param-name>-->
             <!--<param-value>action</param-value>-->

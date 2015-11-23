@@ -1,4 +1,4 @@
-package net.duguying.web.debug;
+package net.duguying.o.debug;
 
 /**
  * Created by duguying on 2015/10/31.

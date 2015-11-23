@@ -16,6 +16,7 @@
         <li>Self Defination the router with Annotation</li>
         <li>Velocity Support View, page router with <code>.vm</code> file</li>
         <li>Ehcache Support ORM, auto cached and cache auto clean</li>
+        <li>Static file host</li>
     </ul>
     <img src="/img/logo1.png" alt="logo">
 </p>

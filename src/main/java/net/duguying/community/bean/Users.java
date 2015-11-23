@@ -1,8 +1,6 @@
 package net.duguying.community.bean;
-import net.duguying.web.orm.CacheAnnotation;
-import net.duguying.web.orm.DBManager;
-import net.duguying.web.orm.Pojo;
-import net.duguying.web.orm.QueryHelper;
+import net.duguying.o.orm.CacheAnnotation;
+import net.duguying.o.orm.Pojo;
 
 import java.sql.SQLException;
 import java.util.List;

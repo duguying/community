@@ -1,4 +1,4 @@
-package net.duguying.web.tool;
+package net.duguying.o.tool;
 
 /**
  * Created by duguying on 2015/11/2.

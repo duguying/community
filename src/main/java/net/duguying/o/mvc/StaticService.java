@@ -1,10 +1,8 @@
-package net.duguying.web.mvc;
+package net.duguying.o.mvc;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

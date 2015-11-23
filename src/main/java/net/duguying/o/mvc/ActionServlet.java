@@ -1,8 +1,6 @@
-package net.duguying.web.mvc;
+package net.duguying.o.mvc;
 
-import net.duguying.community.tool.CommonTool;
-import net.duguying.web.debug.Debug;
-import net.duguying.web.orm.DBManager;
+import net.duguying.o.debug.Debug;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;

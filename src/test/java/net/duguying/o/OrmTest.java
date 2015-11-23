@@ -1,11 +1,6 @@
-package net.duguying.web;
+package net.duguying.o;
 
 import junit.framework.TestCase;
-import net.duguying.community.bean.UserLog;
-import net.duguying.community.bean.Users;
-
-import java.sql.Date;
-import java.sql.SQLException;
 
 public class OrmTest extends TestCase {
     protected void setUp() {

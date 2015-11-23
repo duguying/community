@@ -1,9 +1,7 @@
-package net.duguying.web.orm;
+package net.duguying.o.orm;
 
-import net.duguying.web.debug.Debug;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.*;
-import org.apache.commons.lang.SystemUtils;
 
 import java.math.BigInteger;
 import java.sql.Connection;

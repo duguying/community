@@ -1,7 +1,7 @@
 package net.duguying.community.action;
 
-import net.duguying.web.mvc.HttpAnnotation;
-import net.duguying.web.mvc.RequestContext;
+import net.duguying.o.mvc.HttpAnnotation;
+import net.duguying.o.mvc.RequestContext;
 
 import java.io.IOException;
 

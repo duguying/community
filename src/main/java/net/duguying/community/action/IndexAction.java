@@ -1,16 +1,9 @@
 package net.duguying.community.action;
 
-import net.duguying.community.tool.CommonTool;
-import net.duguying.web.mvc.HttpAnnotation;
-import net.duguying.web.mvc.RequestContext;
-import org.apache.velocity.Template;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
+import net.duguying.o.mvc.HttpAnnotation;
+import net.duguying.o.mvc.RequestContext;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Properties;
 
 /**
  * Created by duguying on 2015/10/31.

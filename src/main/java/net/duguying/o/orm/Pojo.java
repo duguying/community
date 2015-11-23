@@ -1,12 +1,10 @@
-package net.duguying.web.orm;
+package net.duguying.o.orm;
 
-import net.duguying.web.cache.CacheManage;
-import net.duguying.web.tool.StringUtils;
+import net.duguying.o.cache.CacheManage;
+import net.duguying.o.tool.StringUtils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbutils.DbUtils;
-import org.apache.commons.dbutils.QueryLoader;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

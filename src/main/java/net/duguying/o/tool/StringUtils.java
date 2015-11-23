@@ -1,4 +1,4 @@
-package net.duguying.web.tool;
+package net.duguying.o.tool;
 
 import java.security.MessageDigest;
 

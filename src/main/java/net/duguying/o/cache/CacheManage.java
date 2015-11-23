@@ -1,4 +1,4 @@
-package net.duguying.web.cache;
+package net.duguying.o.cache;
 
 import net.duguying.community.bean.Users;
 import org.ehcache.Cache;

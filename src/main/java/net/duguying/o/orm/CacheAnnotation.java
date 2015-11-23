@@ -1,4 +1,4 @@
-package net.duguying.web.mvc;
+package net.duguying.o.orm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,16 +6,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by duguying on 2015/10/30.
+ * Created by duguying on 2015/11/9.
  */
-public @interface HttpAnnotation {
+public @interface CacheAnnotation {
     /**
      * Post Method
      */
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
-    public static @interface URLMapping {
-        public String uri();
-        public String method() default "all";
+    public static @interface ListCache {
+        public String[] tables() default {};
     }
 }

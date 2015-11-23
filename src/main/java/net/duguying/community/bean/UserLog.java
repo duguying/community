@@ -1,6 +1,6 @@
 package net.duguying.community.bean;
 
-import net.duguying.web.orm.Pojo;
+import net.duguying.o.orm.Pojo;
 
 import java.sql.Date;
 
