@@ -381,7 +381,13 @@ public class StaticService {
         String webroot = ctx.webroot();
         String path = webroot + uri;
         File file = new File(path);
-        return file.exists();
+        if (file.isDirectory()){
+            String index = path + File.separator + "index.html";
+            File indexfile = new File(index);
+            return indexfile.isFile() && indexfile.exists();
+        }else {
+            return file.exists();
+        }
     }
 
     /**
