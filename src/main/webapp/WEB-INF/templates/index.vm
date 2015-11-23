@@ -1,25 +1,50 @@
-<!doctype html>
-<html lang="en">
-<head>
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
     <meta charset="UTF-8">
-    <title>O'Framwork -- Simple Java MVC Web Framework</title>
-    <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
+    <title>O'Framework by duguying</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">O'Framework</h1>
+      <h2 class="project-tagline">最简单的Java Web MVC框架</h2>
+      <a href="https://github.com/duguying/community" class="btn">View on GitHub</a>
+      <a href="https://github.com/duguying/community/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/duguying/community/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-<p>
-    <b>O'Framework</b> is a simple java MVC web framework.
-</p>
+    <section class="main-content">
+      <h1>
+<a id="o-framework-simple" class="anchor" href="#o-framework-simple" aria-hidden="true"><span class="octicon octicon-link"></span></a>O'Framework 简单轻量级的Java Web MVC框架</h1>
 
-<p>
-    <ul>
-        <li>Self Defination the router with Annotation</li>
-        <li>Velocity Support View, page router with <code>.vm</code> file</li>
-        <li>Ehcache Support ORM, auto cached and cache auto clean</li>
-        <li>Static file host</li>
-    </ul>
-    <img src="/img/logo1.png" alt="logo">
-</p>
+<p>此框架仅有一个Servlet, 其中包含了自定义路由的Action, Velocity自动路由。非常易用的ORM以及ORM中内嵌的缓存解决方案, 自动清理缓存。</p>
 
-</body>
+<h1>
+<a id="授权" class="anchor" href="#%E6%8E%88%E6%9D%83" aria-hidden="true"><span class="octicon octicon-link"></span></a>授权</h1>
+
+<p>基于MIT协议发布。</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/duguying/community">O'Framework</a> is maintained by <a href="https://github.com/duguying">duguying</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-70403990-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
 </html>
