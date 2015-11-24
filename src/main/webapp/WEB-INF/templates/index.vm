@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>O'Framework by duguying</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-site-verification" content="ohMjRPHv0sKAahvl1H0GC7Dx0-z-zXbMNnWBfxp2PYY" />
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
@@ -13,9 +14,9 @@
     <section class="page-header">
       <h1 class="project-name">O'Framework</h1>
       <h2 class="project-tagline">最简单的Java Web MVC框架</h2>
-      <a href="https://github.com/duguying/community" class="btn">View on GitHub</a>
-      <a href="https://github.com/duguying/community/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/duguying/community/tarball/master" class="btn">Download .tar.gz</a>
+      <a href="https://github.com/duguying/o" class="btn">View on GitHub</a>
+      <a href="https://github.com/duguying/o/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/duguying/o/tarball/master" class="btn">Download .tar.gz</a>
     </section>
 
     <section class="main-content">
@@ -30,21 +31,10 @@
 <p>基于MIT协议发布。</p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/duguying/community">O'Framework</a> is maintained by <a href="https://github.com/duguying">duguying</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/duguying/o">O'Framework</a> is maintained by <a href="https://github.com/duguying">duguying</a>.</span>
       </footer>
 
     </section>
-
-            <script type="text/javascript">
-            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-          </script>
-          <script type="text/javascript">
-            try {
-              var pageTracker = _gat._getTracker("UA-70403990-1");
-            pageTracker._trackPageview();
-            } catch(err) {}
-          </script>
 
   </body>
 </html>
