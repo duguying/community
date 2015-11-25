@@ -11,5 +11,14 @@
 #set($var2=2)
 #set($var3=$var1+$var2)
 <font style="color: red;">自己造轮子 $!{var3}</font>
+
+<div>
+    #set($list=$CommonTool.queryTop10())
+    <ul>
+    #foreach($user in $list)
+    <li>$user.id - $user.username</li>
+    #end
+    </ul>
+</div>
 </body>
 </html>

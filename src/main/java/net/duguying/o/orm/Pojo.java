@@ -232,28 +232,24 @@ public class Pojo {
 
     /**
      * load list
-     * @param beanClass
      * @param ids
      * @param <T>
      * @return
      */
-    public <T extends Pojo> List<T>LoadList(Class<T> beanClass, List<Long> ids) {
+    public <T extends Pojo> List<T>LoadList(List ids) {
         List<T> list = new ArrayList<T>();
-        T obj = null;
-        try {
-            obj = (T)beanClass.newInstance();
-            for (int i = 0; i < ids.size(); i++) {
-                long id = ids.get(i);
-                T item = obj.Get(id);
-                list.add(item);
-            }
-            return list;
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+        List<Long> idList = new ArrayList<Long>(ids.size());
+
+        for (Number id : (List<Number>) ids){
+            idList.add(id.longValue());
         }
-        return null;
+
+        for (int i = 0; i < idList.size(); i++){
+            Long id = idList.get(i);
+            list.add((T) this.Get(id));
+        }
+
+        return list;
     }
 
     /**

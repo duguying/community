@@ -9,6 +9,8 @@ import java.util.List;
  * Created by duguying on 2015/11/1.
  */
 public class Users extends Pojo {
+    public static final Users ME = new Users();
+
     private long id;
     private String username;
     private String password;
@@ -68,7 +70,7 @@ public class Users extends Pojo {
     @CacheAnnotation.ListCache(tables = {"users", "user_log"})
     public List<Users> queryTop10() throws SQLException {
         String sql = "select id from "+TableName()+" limit 10";
-        return LoadList(Users.class, Query(Long.class,sql));
+        return LoadList(Query(Long.class,sql));
     }
 
     @CacheAnnotation.ListCache(tables = {"users", "user_log"})
