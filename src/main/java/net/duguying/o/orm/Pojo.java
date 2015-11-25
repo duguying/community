@@ -1,6 +1,7 @@
 package net.duguying.o.orm;
 
 import net.duguying.o.cache.CacheManage;
+import net.duguying.o.exception.DBException;
 import net.duguying.o.tool.StringUtils;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.dbutils.DbUtils;
@@ -188,7 +189,7 @@ public class Pojo {
      * Cached Query
      * @return
      */
-    protected <T> List<T> Query(Class<T> beanClass, String sql, Object... params) throws SQLException {
+    protected <T> List<T> Query(Class<T> beanClass, String sql, Object... params) {
         StackTraceElement[] stack = new Throwable().getStackTrace();
         if (stack.length<2){
             return null;
@@ -200,7 +201,12 @@ public class Pojo {
             return (List<T>) cachedList;
         }
 
-        List<T> list = QueryHelper.query(beanClass, sql, params);
+        List<T> list = null;
+        try {
+            list = QueryHelper.query(beanClass, sql, params);
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
 
         this.tryCacheData(caller, sql, list, params);
         return list;
@@ -212,7 +218,7 @@ public class Pojo {
      * @param params
      * @return
      */
-    public long Stat(String sql, Object... params) throws SQLException {
+    public long Stat(String sql, Object... params) {
         StackTraceElement[] stack = new Throwable().getStackTrace();
         if (stack.length<2){
             return 0;
@@ -224,7 +230,12 @@ public class Pojo {
             return (Long) cachedCount;
         }
 
-        long count = QueryHelper.stat(sql,params);
+        long count = 0;
+        try {
+            count = QueryHelper.stat(sql,params);
+        } catch (SQLException e) {
+            throw new DBException(e);
+        }
 
         this.tryCacheData(caller, sql, count, params);
         return count;

@@ -15,10 +15,6 @@ public class CommonTool {
     }
 
     public static List<Users> queryTop10(){
-        try {
-            return Users.ME.queryTop10();
-        } catch (SQLException e) {
-            return new ArrayList<Users>();
-        }
+        return Users.ME.queryTop10();
     }
 }
